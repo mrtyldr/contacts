@@ -22,7 +22,7 @@ services:
       - POSTGRES_USER=dbadmin
       - POSTGRES_PASSWORD=dbadmin
     ports:
-      - "5433:5433"
+      - "5433:5432"
 
 
   api:
@@ -32,7 +32,6 @@ services:
     container_name: api
     depends_on:
       - db
-      - integration-db
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/testdb
       - SPRING_DATASOURCE_USERNAME=dbadmin

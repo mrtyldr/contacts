@@ -26,7 +26,7 @@ public class ContactService {
                 .toList();
     }
 
-    private ContactResponse toContactDto(Contact contact){
+    private ContactResponse toContactDto(Contact contact) {
         return new ContactResponse(
                 contact.getId(),
                 contact.getName(),
@@ -34,11 +34,12 @@ public class ContactService {
                 contact.getPhoneNumber()
         );
     }
+
     @Transactional
     public void save(AddContactCommand command) {
-        var phoneNumber = command.phoneNumber().replaceAll(" ","");
+        var phoneNumber = command.phoneNumber().replaceAll(" ", "");
 
-        if(contactRepository.existsByPhoneNumber(phoneNumber))
+        if (contactRepository.existsByPhoneNumber(phoneNumber))
             throw new AlreadyExistsException("Phone Number already exists!");
 
         var contact = Contact.Builder.builder()
@@ -69,5 +70,12 @@ public class ContactService {
                 .orElseThrow(() -> new NotFoundException("contact not found"));
 
         contactRepository.delete(contact);
+    }
+
+    public List<ContactResponse> search(String seacrhQuery) {
+        var query = "%" + seacrhQuery + "%";
+        return contactRepository.search(query)
+                .stream().map(this::toContactDto)
+                .toList();
     }
 }

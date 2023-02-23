@@ -40,4 +40,10 @@ public class ContactController {
     void deleteContact(@PathVariable UUID id){
         contactService.delete(id);
     }
+
+    @GetMapping("/contacts/search")
+    Response<List<ContactResponse>> searchContacts(String searchQuery){
+        return Response.of(contactService.search(searchQuery));
+    }
+
 }

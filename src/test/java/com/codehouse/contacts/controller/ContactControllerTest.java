@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.InstanceOfAssertFactories.LIST;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -83,9 +82,9 @@ class ContactControllerTest {
     }
 
     @Test
-    void should_update_contact() throws Exception{
+    void should_update_contact() throws Exception {
         var contactId = add_contacts().get(0).getId();
-        var request= put("/contacts/{id}",contactId)
+        var request = put("/contacts/{id}", contactId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                           {
@@ -98,13 +97,13 @@ class ContactControllerTest {
 
         mockMvc.perform(request)
                 .andExpect(status().isNoContent());
-     var updatedContact = contactRepository.findById(contactId).orElseThrow();
-     assertThat(updatedContact.getName()).isEqualTo("james");
-     assertThat(updatedContact.getSurname()).isEqualTo("bond");
-     assertThat(updatedContact.getPhoneNumber()).isEqualTo("+905065110007");
-     assertThat(updatedContact.getFullName()).isEqualTo("james bond");
+        var updatedContact = contactRepository.findById(contactId).orElseThrow();
+        assertThat(updatedContact.getName()).isEqualTo("james");
+        assertThat(updatedContact.getSurname()).isEqualTo("bond");
+        assertThat(updatedContact.getPhoneNumber()).isEqualTo("+905065110007");
+        assertThat(updatedContact.getFullName()).isEqualTo("james bond");
 
-     contactRepository.deleteAll();
+        contactRepository.deleteAll();
     }
 
 
@@ -129,16 +128,17 @@ class ContactControllerTest {
     }
 
     @Test
-    void should_delete_contact() throws Exception{
+    void should_delete_contact() throws Exception {
         var contact = add_contacts().get(0);
         assertThat(contactRepository.findById(contact.getId())).isNotEmpty();
 
-        mockMvc.perform(delete("/contacts/{id}",contact.getId()));
+        mockMvc.perform(delete("/contacts/{id}", contact.getId()));
         assertThat(contactRepository.findById(contact.getId())).isEmpty();
     }
+
     @Test
     void should_throw_not_found_exception() throws Exception {
-        mockMvc.perform(delete("/contacts/{id}",UUID.randomUUID()))
+        mockMvc.perform(delete("/contacts/{id}", UUID.randomUUID()))
                 .andExpect(status().isNotFound())
                 .andExpect(content().json(
                         """
@@ -149,6 +149,24 @@ class ContactControllerTest {
                                 }
                                 """
                 ));
+    }
+    @Test
+    void should_search_in_contacts() throws Exception {
+        add_contacts();
+        mockMvc.perform(get("/contacts/search")
+                        .param("searchQuery", "ane"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("""
+                        {
+                        "result": [
+                          {
+                         "name":"jane",
+                         "surname":"doe",
+                         "phoneNumber":"+905065110125"
+                         }
+                        ]
+                        }
+                        """));
     }
 
 
