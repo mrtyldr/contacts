@@ -152,7 +152,7 @@ class ContactControllerTest {
     }
     @Test
     void should_search_in_contacts() throws Exception {
-        add_contacts();
+        var id = add_contacts().get(0).getId();
         mockMvc.perform(get("/contacts/search")
                         .param("searchQuery", "ane"))
                 .andExpect(status().isOk())
@@ -160,13 +160,14 @@ class ContactControllerTest {
                         {
                         "result": [
                           {
+                          "id":"%s",
                          "name":"jane",
                          "surname":"doe",
                          "phoneNumber":"+905065110125"
                          }
                         ]
                         }
-                        """));
+                        """.formatted(id)));
     }
 
 
