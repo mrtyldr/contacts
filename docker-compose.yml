@@ -1,0 +1,42 @@
+version: "3.9"
+services:
+  db:
+    image: postgres:15.2
+    container_name: db
+    environment:
+      - TZ=UTC
+      - PGTZ=UTC
+      - POSTGRES_DB=testdb
+      - POSTGRES_USER=dbadmin
+      - POSTGRES_PASSWORD=dbadmin
+    ports:
+      - "5432:5432"
+
+  integration-db:
+    image: postgres:15.2
+    container_name: integration-db
+    environment:
+      - TZ=UTC
+      - PGTZ=UTC
+      - POSTGRES_DB=testdb
+      - POSTGRES_USER=dbadmin
+      - POSTGRES_PASSWORD=dbadmin
+    ports:
+      - "5433:5433"
+
+
+  api:
+    build:
+      dockerfile: /Users/murat/IdeaProjects/contacts/Dockerfile
+      context: /
+    container_name: api
+    depends_on:
+      - db
+      - integration-db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/testdb
+      - SPRING_DATASOURCE_USERNAME=dbadmin
+      - SPRING_DATASOURCE_PASSWORD=dbadmin
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    ports:
+      - "8080:8080"
