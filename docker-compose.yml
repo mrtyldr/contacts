@@ -27,7 +27,6 @@ services:
 
   api:
     build:
-      dockerfile: /Users/murat/IdeaProjects/contacts/Dockerfile
       context: /
     container_name: api
     depends_on:
